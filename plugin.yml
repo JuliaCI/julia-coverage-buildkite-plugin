@@ -1,5 +1,5 @@
 name: Julia Coverage
-description: Process and submit coverage information from a Julia test run.
+description: Process coverage information from a Julia.
 author: https://github.com/maleadt
 requirements: [julia]
 configuration:
