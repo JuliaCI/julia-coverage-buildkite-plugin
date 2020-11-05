@@ -1,6 +1,7 @@
 #!/bin/bash
 set -euov pipefail
 
+
 echo "--- :julia: Processing coverage"
 
 julia --project -e 'using Pkg;
@@ -9,3 +10,14 @@ julia --project -e 'using Pkg;
                     using CoverageTools;
                     pf = process_folder();
                     LCOV.writefile("lcov.info", pf)'
+
+
+codecov=${BUILDKITE_PLUGIN_JULIA_COVERAGE_CODECOV:-false}
+
+if [ "$codecov" = true ] ; then
+    echo "--- :codecov: Submitting to Codecov"
+
+    # NOTE: we use the Bash uploader because
+    #       Coverage.jl doesn't support Buildkite
+    bash <(curl -s https://codecov.io/bash) -f lcov.info
+fi

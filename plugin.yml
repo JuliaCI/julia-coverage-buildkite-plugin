@@ -1,7 +1,9 @@
 name: Julia Coverage
-description: Process coverage information from a Julia.
+description: Process and submit coverage information from Julia.
 author: https://github.com/maleadt
-requirements: [julia]
+requirements: [julia, curl]
 configuration:
   properties:
+    codecov:
+      type: boolean
   additionalProperties: false
