@@ -4,12 +4,12 @@ set -euov pipefail
 
 echo "--- :julia: Processing coverage"
 
-julia --project -e 'using Pkg;
-                    Pkg.activate("julia-coverage", shared=true);
-                    Pkg.add(PackageSpec(name="CoverageTools"));
-                    using CoverageTools;
-                    pf = process_folder();
-                    LCOV.writefile("lcov.info", pf)'
+julia -e 'using Pkg;
+          Pkg.activate("julia-coverage", shared=true);
+          Pkg.add(PackageSpec(name="CoverageTools"));
+          using CoverageTools;
+          pf = process_folder();
+          LCOV.writefile("lcov.info", pf)'
 
 
 codecov=${BUILDKITE_PLUGIN_JULIA_COVERAGE_CODECOV:-false}
