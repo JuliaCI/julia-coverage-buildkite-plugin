@@ -1,15 +1,26 @@
 #!/bin/bash
-set -euov pipefail
+set -euo pipefail
 
 
 echo "--- :julia: Processing coverage"
+
+# parse the 'dirs' property
+dirs=()
+while IFS='=' read -r name _ ; do
+  if [[ $name =~ ^(BUILDKITE_PLUGIN_JULIA_COVERAGE_DIRS_[0-9]+) ]] ; then
+    dirs+=( "${!name}" )
+  fi
+done < <(env | sort)
+if [ ${#dirs[@]} -eq 0 ]; then
+    dirs+=( "src" )
+fi
 
 julia -e 'using Pkg;
           Pkg.activate("julia-coverage", shared=true);
           Pkg.add(PackageSpec(name="CoverageTools"));
           using CoverageTools;
-          pf = process_folder();
-          LCOV.writefile("lcov.info", pf)'
+          pf = vcat(map(process_folder, ARGS)...);
+          LCOV.writefile("lcov.info", pf)' "${dirs[@]}"
 
 
 codecov=${BUILDKITE_PLUGIN_JULIA_COVERAGE_CODECOV:-false}

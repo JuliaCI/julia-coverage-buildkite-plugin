@@ -6,4 +6,6 @@ configuration:
   properties:
     codecov:
       type: boolean
+    dirs:
+      type: array
   additionalProperties: false
