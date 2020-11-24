@@ -15,11 +15,13 @@ if [ ${#dirs[@]} -eq 0 ]; then
     dirs+=( "src" )
 fi
 
-julia -e 'using Pkg;
-          Pkg.activate("julia-coverage", shared=true);
-          Pkg.add(PackageSpec(name="CoverageTools"));
-          using CoverageTools;
-          pf = vcat(map(process_folder, ARGS)...);
+julia -e 'using Pkg
+          Pkg.UPDATED_REGISTRY_THIS_SESSION[] = true
+          Pkg.activate("julia-coverage", shared=true)
+          Pkg.add(PackageSpec(name="CoverageTools"))
+
+          using CoverageTools
+          pf = vcat(map(process_folder, ARGS)...)
           LCOV.writefile("lcov.info", pf)' "${dirs[@]}"
 
 
