@@ -18,8 +18,7 @@ fi
 julia -e 'using Pkg
           Pkg.UPDATED_REGISTRY_THIS_SESSION[] = true
           Pkg.activate("julia-coverage", shared=true)
-          Pkg.add(PackageSpec(name="CoverageTools"))
-
+          Pkg.add(PackageSpec(name="CoverageTools", uuid="c36e975a-824b-4404-a568-ef97ca766997", version="1"))
           using CoverageTools
           pf = vcat(map(process_folder, ARGS)...)
           LCOV.writefile("lcov.info", pf)' "${dirs[@]}"
