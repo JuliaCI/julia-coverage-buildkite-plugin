@@ -26,10 +26,23 @@ julia -e 'using Pkg
 
 codecov=${BUILDKITE_PLUGIN_JULIA_COVERAGE_CODECOV:-false}
 
+# Ref: https://github.com/codecov/codecov-bash/blob/master/SHA256SUM
+codecovsh_sha256=89c658e261d5f25533598a222fd96cf17a5fa0eb3772f2defac754d9970b2ec8
+
 if [ "$codecov" = true ] ; then
     echo "--- :codecov: Submitting to Codecov"
 
     # NOTE: we use the Bash uploader because
     #       Coverage.jl doesn't support Buildkite
-    bash <(curl -s https://codecov.io/bash) -f lcov.info
+    codecovsh="$(mktemp)"
+    trap 'rm -f "$codecovsh"' EXIT
+    curl --output "$codecovsh" -s https://codecov.io/bash
+    if sha256sum < "$codecovsh" | grep  "$codecovsh_sha256" >/dev/null; then
+        echo "chcksum verified"
+    else
+        echo "unmatched chcksum"
+        sha256sum "$codecovsh"
+        exit 99
+    fi
+    bash "$codecovsh" -f lcov.info
 fi
