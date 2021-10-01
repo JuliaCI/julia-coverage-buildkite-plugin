@@ -26,10 +26,27 @@ julia -e 'using Pkg
 
 codecov=${BUILDKITE_PLUGIN_JULIA_COVERAGE_CODECOV:-false}
 
+# Source: https://uploader.codecov.io/linux/v0.1.3
+# TODO: use the latest binary + GPG verification?
+uploader_url="https://uploader.codecov.io/v0.1.3/linux/codecov"
+uploader_checksum=84c83d0540449e8ae8dd1ce844b53d8ec920c84158fe705fafabafb1437885fe
+
 if [ "$codecov" = true ] ; then
     echo "--- :codecov: Submitting to Codecov"
 
-    # NOTE: we use the Bash uploader because
-    #       Coverage.jl doesn't support Buildkite
-    bash <(curl -s https://codecov.io/bash) -f lcov.info
+    # download and verify the Codecov uploader
+    # TODO: use Coverage.jl
+    uploader="$(mktemp)"
+    trap 'rm -f "$uploader"' EXIT
+    curl --output "$uploader" -s "$uploader_url"
+    if sha256sum < "$uploader" | grep  "$uploader_checksum" >/dev/null; then
+        echo "checksum verified"
+    else
+        echo "checksum failed!"
+        sha256sum "$uploader"
+        exit 99
+    fi
+    chmod +x "$uploader"
+
+    $uploader -t "${CODECOV_TOKEN}" -f lcov.info
 fi
