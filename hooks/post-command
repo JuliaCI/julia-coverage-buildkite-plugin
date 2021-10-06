@@ -18,18 +18,7 @@ fi
 julia -e 'using Pkg
           Pkg.UPDATED_REGISTRY_THIS_SESSION[] = true
           Pkg.activate("julia-coverage", shared=true)
-          Pkg.add(PackageSpec(name="CoverageTools", uuid="c36e975a-824b-4404-a568-ef97ca766997", version="1"))
-          using CoverageTools
+          Pkg.add(PackageSpec(name="Coverage", uuid="a2441757-f6aa-5fb2-8edb-039e3f45d037", version="1.4"))
+          using Coverage
           pf = vcat(map(process_folder, ARGS)...)
-          LCOV.writefile("lcov.info", pf)' "${dirs[@]}"
-
-
-codecov=${BUILDKITE_PLUGIN_JULIA_COVERAGE_CODECOV:-false}
-
-if [ "$codecov" = true ] ; then
-    echo "--- :codecov: Submitting to Codecov"
-
-    # NOTE: we use the Bash uploader because
-    #       Coverage.jl doesn't support Buildkite
-    bash <(curl -s https://codecov.io/bash) -f lcov.info
-fi
+          Codecov.submit(pf)' "${dirs[@]}"
