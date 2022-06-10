@@ -21,4 +21,5 @@ julia -e 'using Pkg
           Pkg.add(PackageSpec(name="Coverage", uuid="a2441757-f6aa-5fb2-8edb-039e3f45d037", version="1.4"))
           using Coverage
           pf = vcat(map(process_folder, ARGS)...)
+          foreach(clean_folder, ARGS)
           Codecov.submit(pf)' "${dirs[@]}"
