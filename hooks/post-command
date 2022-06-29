@@ -22,4 +22,4 @@ julia -e 'using Pkg
           using Coverage
           pf = vcat(map(process_folder, ARGS)...)
           foreach(clean_folder, ARGS)
-          Codecov.submit(pf)' "${dirs[@]}"
+          haskey(ENV, "CODECOV_TOKEN") && Codecov.submit(pf)' "${dirs[@]}"
