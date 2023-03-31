@@ -4,8 +4,6 @@ author: https://github.com/maleadt
 requirements: [julia, curl]
 configuration:
   properties:
-    codecov:
-      type: boolean
     dirs:
       type: array
   additionalProperties: false
