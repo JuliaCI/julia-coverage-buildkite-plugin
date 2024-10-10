@@ -1,35 +1,5 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-
 echo "--- :julia: Processing coverage"
-
-# parse the 'dirs' property
-dirs=()
-while IFS='=' read -r name _ ; do
-  if [[ $name =~ ^(BUILDKITE_PLUGIN_JULIA_COVERAGE_DIRS_[0-9]+) ]] ; then
-    dirs+=( "${!name}" )
-  fi
-done < <(env | sort)
-if [ ${#dirs[@]} -eq 0 ]; then
-    dirs+=( "src" )
-fi
-
-julia -e 'using Pkg
-          Pkg.UPDATED_REGISTRY_THIS_SESSION[] = true
-          Pkg.activate("julia-coverage", shared=true)
-          Pkg.add(PackageSpec(name="Coverage", uuid="a2441757-f6aa-5fb2-8edb-039e3f45d037", version="1.6"))
-
-          using Coverage
-          pf = vcat(map(process_folder, ARGS)...)
-          foreach(clean_folder, ARGS)
-          if !haskey(ENV, "CODECOV_TOKEN")
-            run(`buildkite-agent annotate "Cannot submit coverage without Codecov key." --style "error" --context "ctx-coverage"`)
-          else
-            try
-              Codecov.submit(pf)
-            catch err
-              @error "Error submitting to Codecov" exception=(err, catch_backtrace())
-              run(`buildkite-agent annotate "Failed to submit coverage." --style "error" --context "ctx-coverage"`)
-            end
-          end' "${dirs[@]}"
+julia "$(dirname "$(dirname "${BASH_SOURCE[0]}")")/src/main.jl"

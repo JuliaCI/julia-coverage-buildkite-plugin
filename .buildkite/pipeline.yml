@@ -1,0 +1,17 @@
+# The CODECOV_TOKEN is propagated from the WebUI to all pipelines. This is a
+# bit sloppy but i) this pipeline is not public, ii) builds are disabled for
+# PRs from forks, and iii) variables matching `*_TOKEN` are redacted in
+# buildkite logs.
+env:
+  CODECOV_TOKEN: "${CODECOV_TOKEN?}"
+  CODECOV_ORG_TOKEN: "${CODECOV_ORG_TOKEN?}"
+
+steps:
+  - label: ":rocket: Launch pipelines"
+    command: |
+      OS="linux" ARCH="x86_64" QUEUE="julia" buildkite-agent pipeline upload .buildkite/runtests.yml
+      OS="linux" ARCH="aarch64" buildkite-agent pipeline upload .buildkite/runtests.yml
+      OS="linux" ARCH="aarch64" CODECOV_TOKEN="${CODECOV_ORG_TOKEN}" buildkite-agent pipeline upload .buildkite/runtests.yml
+      OS="macos" ARCH="aarch64" buildkite-agent pipeline upload .buildkite/runtests.yml
+    agents:
+      queue: "juliaecosystem"
