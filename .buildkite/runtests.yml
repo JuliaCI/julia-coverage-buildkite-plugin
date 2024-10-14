@@ -1,0 +1,19 @@
+steps:
+  - label: ":${OS?}: Run tests - ${OS?} ${ARCH?}"
+    plugins:
+      - staticfloat/metahook:
+         post-checkout: |
+           mkdir -p .buildkite/plugins/julia-coverage
+           cp -Ra hooks src plugin.yml README.md .buildkite/plugins/julia-coverage/
+      - JuliaCI/julia#v1:
+          version: "1"
+      - "./.buildkite/plugins/julia-coverage":
+          dirs: ["src", "utils"]
+          fail-on-error: true
+    command: |
+      julia --code-coverage=@ utils/checksums.jl
+      JULIA_COVERAGE_SUBMIT=false julia --code-coverage=@ src/main.jl
+    agents:
+      queue: "${QUEUE:-juliaecosystem}"
+      arch: "${ARCH?}"
+      os: "${OS?}"

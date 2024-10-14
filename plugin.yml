@@ -1,9 +1,11 @@
 name: Julia Coverage
 description: Process and submit coverage information from Julia.
 author: https://github.com/maleadt
-requirements: [julia, curl]
+requirements: [julia]
 configuration:
   properties:
     dirs:
       type: array
+    fail-on-error:
+      type: boolean
   additionalProperties: false
