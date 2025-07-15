@@ -29,3 +29,4 @@ plugin.
 ## Options
 
 * `dirs`: A list of directories to process coverage for. Defaults to `src`.
+* `flags`: A list of flags to categorize the coverage reports. These flags can be used to generate separate coverage badges for different aspects of your project, which is particularly useful for monorepos. Defaults to an empty list.
