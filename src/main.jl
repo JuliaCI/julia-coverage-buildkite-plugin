@@ -99,6 +99,15 @@ function coverage_dirs()
     return dirs
 end
 
+function coverage_flags()
+    flags = String[]
+    for (k, v) in ENV
+        if occursin(r"^BUILDKITE_PLUGIN_JULIA_COVERAGE_FLAGS_[0-9]+$", k)
+            push!(flags, v)
+        end
+    end
+    return flags
+end
 
 # Process the coverage files
 function process_coverage(dirs)
@@ -136,6 +145,9 @@ function upload_coverage(exepath)
         --disable-search
         --file lcov.info
     ```
+    for flag in coverage_flags()
+        cmd = `$cmd --flag $flag`
+    end
     if (token = get(ENV, "CODECOV_TOKEN", nothing); token !== nothing)
         cmd = `$cmd --token $token`
     end

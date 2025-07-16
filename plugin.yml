@@ -6,6 +6,8 @@ configuration:
   properties:
     dirs:
       type: array
+    flags:
+      type: array
     fail-on-error:
       type: boolean
   additionalProperties: false
