@@ -14,6 +14,6 @@ steps:
       julia --code-coverage=@ utils/checksums.jl
       JULIA_COVERAGE_SUBMIT=false julia --code-coverage=@ src/main.jl
     agents:
-      queue: "${QUEUE:-juliaecosystem}"
+      queue: "test"
       arch: "${ARCH?}"
       os: "${OS?}"
